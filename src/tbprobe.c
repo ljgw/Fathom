@@ -27,6 +27,7 @@
 #include <stdlib.h>
 
 #include "tbprobe.h"
+#include "com_winkelhagen_chess_syzygy_SyzygyBridge.h"
 
 #define WHITE_KING              (TB_WPAWN + 5)
 #define WHITE_QUEEN             (TB_WPAWN + 4)
@@ -1905,6 +1906,32 @@ unsigned tb_probe_root_impl(
     res = TB_SET_EP(res, is_en_passant(&pos, move));
     return res;
 }
+
+
+JNIEXPORT jboolean JNICALL Java_com_winkelhagen_chess_syzygy_SyzygyBridge_init
+  (JNIEnv * env, jclass clz, jstring string){
+    const char* str = env->GetStringUTFChars(string, 0);
+    char path[512];
+    strcpy(path, str);
+    env->ReleaseStringUTFChars(string, str);
+    return tb_init_impl(path);
+}
+
+JNIEXPORT jint JNICALL Java_com_winkelhagen_chess_syzygy_SyzygyBridge_getTBLargest
+  (JNIEnv * env, jclass clz){
+    return TB_LARGEST;
+}
+
+JNIEXPORT jint JNICALL Java_com_winkelhagen_chess_syzygy_SyzygyBridge_probeWDL
+  (JNIEnv * env, jclass clz, jlong white, jlong black, jlong kings, jlong queens, jlong rooks, jlong bishops, jlong knights, jlong pawns, jint ep, jboolean turn){
+    return tb_probe_wdl_impl(static_cast<uint64_t>(white), static_cast<uint64_t>(black), static_cast<uint64_t>(kings), static_cast<uint64_t>(queens), static_cast<uint64_t>(rooks), static_cast<uint64_t>(bishops), static_cast<uint64_t>(knights), static_cast<uint64_t>(pawns), ep, turn);
+}
+
+JNIEXPORT jint JNICALL Java_com_winkelhagen_chess_syzygy_SyzygyBridge_probeDTZ
+  (JNIEnv * env, jclass clz, jlong white, jlong black, jlong kings, jlong queens, jlong rooks, jlong bishops, jlong knights, jlong pawns, jint rule50, jint ep, jboolean turn){
+    return tb_probe_root_impl(static_cast<uint64_t>(white), static_cast<uint64_t>(black), static_cast<uint64_t>(kings), static_cast<uint64_t>(queens), static_cast<uint64_t>(rooks), static_cast<uint64_t>(bishops), static_cast<uint64_t>(knights), static_cast<uint64_t>(pawns), rule50, ep, turn, NULL);
+}
+
 
 #ifndef TB_NO_HELPER_API
 
