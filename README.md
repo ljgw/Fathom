@@ -1,8 +1,35 @@
-Fathom
-======
+Java Syzygy Bridge
+==================
+To be able to use Ronald de Man's Syzygy tablebases in a Java program I have modified the Fathom programming API to allow for execution via JNI.
 
-Fathom is a stand-alone Syzygy tablebase probing tool.  The aims of Fathom
-are:
+Companion to this C/C++ code is a java jar file that mirrors the functionality of the programming API as explained below.
+This jar file can be included in any java chess engine and takes care of the loading the libJSyzygy.so library.
+All functionality in the jar file is located in the SyzygyBridge class in the form of six static functions.
+In addition to the `probeSyzygyWDL` and `probeSyzygyWDL` functions there are some support functions: 
+* `isLibLoaded` (determine if the libJSyzygy.so library was succesfully loaded)
+* `load` (loads the tablebases)
+* `isAvailable` (determine if the tablebases for the specified size are loaded)
+* `getSupportedSize` (returns TB_LARGEST from tbprobe.h)
+
+The SyzygyConstants class contains the various constants normally exposed by the tbprobe.h header file.
+
+Platforms
+---------
+This Java Syzygy Bridge was developed on linux. No effort was yet invested to get it to work on any other machine than my own.
+To compile this software a java 8 JDK is needed. The following command was used on my machine:
+`g++ -std=c++14 -O2 -Wall -D TB_USE_ATOMIC -D TB_NO_HW_POP_COUNT -fPIC -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/linux" -shared -o libJSyzygy.so tbprobe.c`
+
+Credits
+-------
+* Syzygy Tablebases were conceived by Ronald de Man (https://github.com/syzygy1/tb).
+* Fathom was developed by basil00 (https://github.com/basil00/Fathom).
+* My modifications are based on the Jon Dart fork (https://github.com/jdart1/Fathom)
+
+
+Original Fathom
+===============
+
+Fathom is a stand-alone Syzygy tablebase probing tool. The aims of Fathom are:
 
 * To make it easy to integrate the Syzygy tablebases into existing chess
   engines;
@@ -12,34 +39,12 @@ are:
 Tool
 ----
 
-Fathom includes a stand-alone command-line syzygy probing tool `fathom`.  To
-probe a position, simply run the command:
-
-    fathom --path=<path-to-TB-files> "FEN-string"
-
-The tool will print out a PGN representation of the probe result, including:
-
-* Result: "1-0" (white wins), "1/2-1/2" (draw), or "0-1" (black wins)
-* The Win-Draw-Loss (WDL) value for the next move: "Win", "Draw", "Loss",
-  "CursedWin" (win but 50-move draw) or "BlessedLoss" (loss but 50-move draw)
-* The Distance-To-Zero (DTZ) value (in plys) for the next move
-* WinningMoves: The list of all winning moves
-* DrawingMoves: The list of all drawing moves
-* LosingMoves: The list of all losing moves
-* A pseudo "principle variation" of Syzygy vs. Syzygy for the input position.
-
-For more information, run the following command:
-
-    fathom --help
-
-Pre-compiled versions of `fathom` (for all platforms) are available from here:
-
-* https://github.com/basil00/Fathom/releases
+The actual Fathom tool is excluded from this fork because it is not needed in any way for the purpose of a Java Syzygy Bridge.
 
 Programming API
 ---------------
 
-Fathom provides a simple API.  There are three main function calls:
+Fathom provides a simple API. There are three main function calls:
 
 * `tb_init` initializes the tablebase
 * `tb_probe_wdl` probes the Win-Draw-Loss (WDL) table for a given position
@@ -47,30 +52,30 @@ Fathom provides a simple API.  There are three main function calls:
   position.
 
 All of the API functions use basic integer types, i.e. there is no need to
-create and initialize data-structures.  Fathom does not require the callee
+create and initialize data-structures. Fathom does not require the callee
 to provide any additional functionality (e.g. move generation) unlike the
-traditional `tbprobe` code.  However, chess engines can opt to replace some
+traditional `tbprobe` code. However, chess engines can opt to replace some
 of the functionality of Fathom for better performance (see below).
 
 Chess Engines
 -------------
 
-Chess engines can be `tb_probe_wdl` to get the WDL value during search.  The
+Chess engines can be `tb_probe_wdl` to get the WDL value during search. The
 `tb_probe_root` functional can be used to help pick the best move at the root.
 Note that `tb_probe_root` is slower and therefore should only be used at the
 root.
 
 Chess engines can opt for a tighter integration of Fathom by configuring
-`tbconfig.h`.  Specifically, the chess engines can define `TB_*_ATTACKS`
+`tbconfig.h`. Specifically, the chess engines can define `TB_*_ATTACKS`
 macros that replace the default definitions with the engine's own definitions,
 avoiding duplication of functionality.
 
 Credits
 -------
 
-The Syzygy tablebases were created by Ronald de Man.  Much of the probing code
+The Syzygy tablebases were created by Ronald de Man. Much of the probing code
 `tbprobe.c` is a modified version of Ronald's `tbprobe.cpp` for Stockfish (all
-Stockfish-specific code has been removed).  The `tbcore.c` file is virtually
+Stockfish-specific code has been removed). The `tbcore.c` file is virtually
 unchanged from Ronald's original version.
 
 License
