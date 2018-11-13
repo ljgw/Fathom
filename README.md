@@ -3,7 +3,8 @@ Java Syzygy Bridge
 To be able to use Ronald de Man's Syzygy tablebases in a Java program I have modified the Fathom programming API to allow for execution via JNI.
 
 Companion to this C/C++ code is a java jar file that mirrors the functionality of the programming API as explained below.
-This jar file can be included in any java chess engine and takes care of the loading the libJSyzygy.so library.
+This jar file can be included in any java chess engine and takes care of the loading the JSyzygy library.
+The JSyzygy library should be placed in the java library path (or, on linux, it can be placed next to the chess-engine jar).
 All functionality in the jar file is located in the SyzygyBridge class in the form of six static functions.
 In addition to the `probeSyzygyWDL` and `probeSyzygyWDL` functions there are some support functions: 
 * `isLibLoaded` (determine if the libJSyzygy.so library was succesfully loaded)
