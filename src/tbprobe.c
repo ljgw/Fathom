@@ -22,6 +22,10 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+/*
+ * compile on windows in C:\opt\mingw-w64\x86_64-8.1.0-win32-seh-rt_v6-rev0
+ * using "gcc -std=gnu99 -O2 -Wall -D TB_USE_ATOMIC -DTB_NO_HW_POP_COUNT -fPIC -I"%JAVA_HOME%/include" -I"%JAVA_HOME%/include/win32" -shared -o JSyzygy.dll tbprobe.c"
+ */
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1910,10 +1914,10 @@ unsigned tb_probe_root_impl(
 
 JNIEXPORT jboolean JNICALL Java_com_winkelhagen_chess_syzygy_SyzygyBridge_init
   (JNIEnv * env, jclass clz, jstring string){
-    const char* str = env->GetStringUTFChars(string, 0);
+    const char* str = (*env)->GetStringUTFChars(env, string, 0);
     char path[512];
     strcpy(path, str);
-    env->ReleaseStringUTFChars(string, str);
+    (*env)->ReleaseStringUTFChars(env, string, str);
     return tb_init_impl(path);
 }
 

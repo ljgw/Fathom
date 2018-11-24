@@ -107,14 +107,10 @@ static FD open_tb(const char *str, const char *suffix)
   int i;
   FD fd;
   size_t remain;
-#ifdef _WIN32
-  const int MAX_LEN = MAX_PATH;
-#else
   // assume 256
   const int MAX_LEN = 256;
-#endif
   remain = MAX_LEN-1; // allow room for null
-  char file[MAX_LEN];
+  char file[256];
 
   for (i = 0; i < num_paths; i++) {
     strncpy(file, paths[i], remain);
